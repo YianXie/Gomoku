@@ -1,0 +1,203 @@
+<!Doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>五子棋</title>
+	<style>
+		body {
+			text-align: center;
+			margin: 0;
+			padding: 0;
+		}
+		
+		#gameTable td {
+			width: 70px;
+			height: 70px;
+			text-align: center;
+			font-family: monospace;
+			margin: 0 auto;
+			border: 3px solid;
+			background-color: rgb(206, 160, 114);
+		}
+
+		#gameTable {
+			margin: 0 auto;
+			padding: 10px;
+			border-collapse: collapse;
+		}
+
+		#bottomText {
+			font-size: xx-large;
+		}
+	</style>
+</head>
+<body>
+	<br>
+	<div style="text-align: center;font-size: 25px;" id="topic">五子棋</div>
+	<br>
+	<table id="gameTable" style="border: 1px solid;"></table>
+	<div id="bottomText"></div>
+	<script>
+		var mapSize = 9;
+		var mainGame = document.getElementById("gameTable");
+		// 0: not clicked; 1: black; 2: white;
+		var map = [
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0]
+		];
+		var rowIndex;
+		var colIndex;
+		var color = 1;
+
+		for (let i = 0;i<mapSize;i++) {
+			const mainGameTr = document.createElement("tr");
+			mainGameTr.id = i;
+			mainGame.appendChild(mainGameTr);
+			for (let c = 0;c<mapSize;c++) {
+				const mainGameTd = document.createElement("td");
+				document.getElementById(i).appendChild(mainGameTd);
+			};
+		};
+
+		var trCell = document.querySelectorAll("tr");
+		var tdCell = document.querySelectorAll("td");
+
+		trCell.forEach(row => {
+			row.addEventListener("click",function(click_row) {
+				var rowIndex = row.rowIndex;
+				playChess(rowIndex,colIndex);
+			});
+		});
+		tdCell.forEach(col => {
+			col.addEventListener("click",function(click_col) {
+				colIndex = col.cellIndex;
+			});
+		});
+
+		function playChess(row,col) {
+			if (map[row][col] == 0) {
+				if (color == 1) {
+					map[row][col] = 1;
+					mainGame.rows[row].cells[col].style.backgroundColor = "black";
+				} else {
+					map[row][col] = 2;
+					mainGame.rows[row].cells[col].style.backgroundColor = "white";
+				};
+			};
+			if (isWon(color,row,col)) {
+				if (color == 1) {
+					document.getElementById("bottomText").innerHTML = "Black Won!";
+				} else {
+					document.getElementById("bottomText").innerHTML = "White Won!";
+				};
+			}
+			if (color == 1) {
+				color = 2;
+			} else {
+				color = 1;
+			};
+
+		};
+
+		function isWon(color,row,col) {
+			// check row
+			if (col-4 >= 0) {
+				if ( map[row][col-4] == color && map[row][col-3] == color && map[row][col-2] == color && map[row][col-1] == color ) {
+					return true;
+				};
+			} if (col-3 >= 0 && col+1 < mapSize) {
+				if ( map[row][col-3] == color && map[row][col-2] == color && map[row][col-1] && map[row][col+1] == color ) {
+					return true;
+				};
+			} if (col-2 >= 0 && col+2 < mapSize) {
+				if (map[row][col-2] == color && map[row][col-1] && map[row][col+1] == color && map[row][col+2] == color) {
+					return true;
+				};
+			} if (col-1 >= 0 && col+3 < mapSize) {
+				if (map[row][col-1] && map[row][col+1] == color && map[row][col+2] == color && map[row][col+3] == color) {
+					return true;
+				};
+			} if (col+4 < mapSize) {
+				if (map[row][col+1] == color && map[row][col+2] == color && map[row][col+3] == color && map[row][col+4] == color) {
+					return true;
+				};
+			};
+			// check column
+			if (row-4 >= 0) {
+				if ( map[row-4][col] == color && map[row-3][col] == color && map[row-2][col] == color && map[row-1][col] == color ) {
+					return true;
+				};
+			} if (row-3 >= 0 && row+1 < mapSize) {
+				if ( map[row-3][col] == color && map[row-2][col] == color && map[row-1][col] && map[row+1][col] == color ) {
+					return true;
+				};
+			} if (row-2 >= 0 && row+2 < mapSize) {
+				if (map[row-2][col] == color && map[row-1][col] && map[row+1][col] == color && map[row+2][col] == color) {
+					return true;
+				};
+			} if (row-1 >= 0 && row+3 < mapSize) {
+				if (map[row-1][col] && map[row+1][col] == color && map[row+2][col] == color && map[row+3][col] == color) {
+					return true;
+				};
+			} if (row+4 < mapSize) {
+				if (map[row+1][col] == color && map[row+2][col] == color && map[row+3][col] == color && map[row+4][col] == color) {
+					return true;
+				};
+			};
+			// check left diagonal
+			if (row-4 >= 0 && col-4 >= 0) {
+				if ( map[row-4][col-4] == color && map[row-3][col-3] == color && map[row-2][col-2] == color && map[row-1][col-1] == color ) {
+					return true;
+				};
+			} if (row-3 >= 0 && col-3 >= 0 && row+1 < mapSize && col+1 < mapSize) {
+				if ( map[row-3][col-3] == color && map[row-2][col-2] == color && map[row-1][col-1] && map[row+1][col+1] == color ) {
+					return true;
+				};
+			} if (row-2 >= 0 && col-2 >= 0 && row+2 < mapSize && col+2 < mapSize) {
+				if (map[row-2][col-2] == color && map[row-1][col-1] && map[row+1][col+1] == color && map[row+2][col+2] == color) {
+					return true;
+				};
+			} if (row-1 >= 0 && col-1 >= 0 && row+3 < mapSize && col+3 < mapSize) {
+				if (map[row-1][col-1] && map[row+1][col+1] == color && map[row+2][col+2] == color && map[row+3][col+3] == color) {
+					return true;
+				};
+			} if (row+4 < mapSize && col+4 < mapSize) {
+				if (map[row+1][col+1] == color && map[row+2][col+2] == color && map[row+3][col+3] == color && map[row+4][col+4] == color) {
+					return true;
+				};
+			};
+			// check right diagonal
+			if (row-4 >= 0 && col+4 < mapSize) {
+				if ( map[row-4][col+4] == color && map[row-3][col+3] == color && map[row-2][col+2] == color && map[row-1][col+1] == color ) {
+					return true;
+				};
+			} if (row-3 >= 0 && col+3 < mapSize && row+1 < mapSize && col-1 >= 0) {
+				if ( map[row-3][col+3] == color && map[row-2][col+2] == color && map[row-1][col+1] && map[row+1][col-1] == color ) {
+					return true;
+				};
+			} if (row-2 >= 0 && col+2 < mapSize && row+2 < mapSize && col-2 >= 0) {
+				if (map[row-2][col+2] == color && map[row-1][col+1] && map[row+1][col-1] == color && map[row+2][col-2] == color) {
+					return true;
+				};
+			} if (row-1 >= 0 && col+1 < mapSize && row+3 < mapSize && col-3 >= 0) {
+				if (map[row-1][col+1] == color && map[row+1][col-1] == color && map[row+2][col-2] == color && map[row+3][col-3] == color) {
+					return true;
+				};
+			} if (row+4 < mapSize && col-4 >= 0) {
+				if (map[row+1][col-1] == color && map[row+2][col-2] == color && map[row+3][col-3] == color && map[row+4][col-4] == color) {
+					return true;
+				};
+			};
+			return false;
+		}
+	</script>
+</body>
+</html>
