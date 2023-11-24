@@ -7,197 +7,174 @@
 	<style>
 		body {
 			text-align: center;
-			margin: 0;
-			padding: 0;
 		}
-		
-		#gameTable td {
-			width: 70px;
-			height: 70px;
-			text-align: center;
-			font-family: monospace;
-			margin: 0 auto;
+
+		canvas {
 			border: 3px solid;
-			background-color: rgb(206, 160, 114);
-		}
-
-		#gameTable {
-			margin: 0 auto;
-			padding: 10px;
-			border-collapse: collapse;
-		}
-
-		#bottomText {
-			font-size: xx-large;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%,-50%);
 		}
 	</style>
 </head>
 <body>
-	<br>
-	<div style="text-align: center;font-size: 25px;" id="topic">五子棋</div>
-	<br>
-	<table id="gameTable" style="border: 1px solid;"></table>
-	<div id="bottomText"></div>
+	<!-- <h1>五子棋</h1> -->
+	<canvas id="gameBoard" width="700" height="700"></canvas>
 	<script>
-		var mapSize = 9;
-		var mainGame = document.getElementById("gameTable");
-		// 0: not clicked; 1: black; 2: white;
-		var map = [
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0,0]
-		];
-		var rowIndex;
-		var colIndex;
-		var color = 1;
+		const gameSize = 8;
+		let intersectPoint = [];
+		let black = true;
 
-		for (let i = 0;i<mapSize;i++) {
-			const mainGameTr = document.createElement("tr");
-			mainGameTr.id = i;
-			mainGame.appendChild(mainGameTr);
-			for (let c = 0;c<mapSize;c++) {
-				const mainGameTd = document.createElement("td");
-				document.getElementById(i).appendChild(mainGameTd);
-			};
-		};
+		let game = document.getElementById("gameBoard");
+		let pen = game.getContext("2d");
 
-		var trCell = document.querySelectorAll("tr");
-		var tdCell = document.querySelectorAll("td");
-
-		trCell.forEach(row => {
-			row.addEventListener("click",function(click_row) {
-				var rowIndex = row.rowIndex;
-				playChess(rowIndex,colIndex);
-			});
-		});
-		tdCell.forEach(col => {
-			col.addEventListener("click",function(click_col) {
-				colIndex = col.cellIndex;
-			});
-		});
-
-		function playChess(row,col) {
-			if (map[row][col] == 0) {
-				if (color == 1) {
-					map[row][col] = 1;
-					mainGame.rows[row].cells[col].style.backgroundColor = "black";
-				} else {
-					map[row][col] = 2;
-					mainGame.rows[row].cells[col].style.backgroundColor = "white";
-				};
-			};
-			if (isWon(color,row,col)) {
-				if (color == 1) {
-					document.getElementById("bottomText").innerHTML = "Black Won!";
-				} else {
-					document.getElementById("bottomText").innerHTML = "White Won!";
-				};
-			}
-			if (color == 1) {
-				color = 2;
-			} else {
-				color = 1;
-			};
-
-		};
-
-		function isWon(color,row,col) {
-			// check row
-			if (col-4 >= 0) {
-				if ( map[row][col-4] == color && map[row][col-3] == color && map[row][col-2] == color && map[row][col-1] == color ) {
-					return true;
-				};
-			} if (col-3 >= 0 && col+1 < mapSize) {
-				if ( map[row][col-3] == color && map[row][col-2] == color && map[row][col-1] && map[row][col+1] == color ) {
-					return true;
-				};
-			} if (col-2 >= 0 && col+2 < mapSize) {
-				if (map[row][col-2] == color && map[row][col-1] && map[row][col+1] == color && map[row][col+2] == color) {
-					return true;
-				};
-			} if (col-1 >= 0 && col+3 < mapSize) {
-				if (map[row][col-1] && map[row][col+1] == color && map[row][col+2] == color && map[row][col+3] == color) {
-					return true;
-				};
-			} if (col+4 < mapSize) {
-				if (map[row][col+1] == color && map[row][col+2] == color && map[row][col+3] == color && map[row][col+4] == color) {
-					return true;
-				};
-			};
-			// check column
-			if (row-4 >= 0) {
-				if ( map[row-4][col] == color && map[row-3][col] == color && map[row-2][col] == color && map[row-1][col] == color ) {
-					return true;
-				};
-			} if (row-3 >= 0 && row+1 < mapSize) {
-				if ( map[row-3][col] == color && map[row-2][col] == color && map[row-1][col] && map[row+1][col] == color ) {
-					return true;
-				};
-			} if (row-2 >= 0 && row+2 < mapSize) {
-				if (map[row-2][col] == color && map[row-1][col] && map[row+1][col] == color && map[row+2][col] == color) {
-					return true;
-				};
-			} if (row-1 >= 0 && row+3 < mapSize) {
-				if (map[row-1][col] && map[row+1][col] == color && map[row+2][col] == color && map[row+3][col] == color) {
-					return true;
-				};
-			} if (row+4 < mapSize) {
-				if (map[row+1][col] == color && map[row+2][col] == color && map[row+3][col] == color && map[row+4][col] == color) {
-					return true;
-				};
-			};
-			// check left diagonal
-			if (row-4 >= 0 && col-4 >= 0) {
-				if ( map[row-4][col-4] == color && map[row-3][col-3] == color && map[row-2][col-2] == color && map[row-1][col-1] == color ) {
-					return true;
-				};
-			} if (row-3 >= 0 && col-3 >= 0 && row+1 < mapSize && col+1 < mapSize) {
-				if ( map[row-3][col-3] == color && map[row-2][col-2] == color && map[row-1][col-1] && map[row+1][col+1] == color ) {
-					return true;
-				};
-			} if (row-2 >= 0 && col-2 >= 0 && row+2 < mapSize && col+2 < mapSize) {
-				if (map[row-2][col-2] == color && map[row-1][col-1] && map[row+1][col+1] == color && map[row+2][col+2] == color) {
-					return true;
-				};
-			} if (row-1 >= 0 && col-1 >= 0 && row+3 < mapSize && col+3 < mapSize) {
-				if (map[row-1][col-1] && map[row+1][col+1] == color && map[row+2][col+2] == color && map[row+3][col+3] == color) {
-					return true;
-				};
-			} if (row+4 < mapSize && col+4 < mapSize) {
-				if (map[row+1][col+1] == color && map[row+2][col+2] == color && map[row+3][col+3] == color && map[row+4][col+4] == color) {
-					return true;
-				};
-			};
-			// check right diagonal
-			if (row-4 >= 0 && col+4 < mapSize) {
-				if ( map[row-4][col+4] == color && map[row-3][col+3] == color && map[row-2][col+2] == color && map[row-1][col+1] == color ) {
-					return true;
-				};
-			} if (row-3 >= 0 && col+3 < mapSize && row+1 < mapSize && col-1 >= 0) {
-				if ( map[row-3][col+3] == color && map[row-2][col+2] == color && map[row-1][col+1] && map[row+1][col-1] == color ) {
-					return true;
-				};
-			} if (row-2 >= 0 && col+2 < mapSize && row+2 < mapSize && col-2 >= 0) {
-				if (map[row-2][col+2] == color && map[row-1][col+1] && map[row+1][col-1] == color && map[row+2][col-2] == color) {
-					return true;
-				};
-			} if (row-1 >= 0 && col+1 < mapSize && row+3 < mapSize && col-3 >= 0) {
-				if (map[row-1][col+1] == color && map[row+1][col-1] == color && map[row+2][col-2] == color && map[row+3][col-3] == color) {
-					return true;
-				};
-			} if (row+4 < mapSize && col-4 >= 0) {
-				if (map[row+1][col-1] == color && map[row+2][col-2] == color && map[row+3][col-3] == color && map[row+4][col-4] == color) {
-					return true;
-				};
-			};
-			return false;
+		function init() {
+			drawGame();
+			detectClick();
 		}
+
+		function drawGame() {
+			let currentIndex = 0;
+			for (let i=0;i<gameSize;i++) { // draw the rows first
+				currentIndex += game.width/gameSize;
+				pen.moveTo(currentIndex,0);
+				pen.lineTo(currentIndex,game.height);
+				pen.stroke();
+			}
+			currentIndex = 0; // reset currentIndex to 0
+
+			for (let i=0;i<gameSize;i++) { // then draw the columns
+				currentIndex += game.height/gameSize;
+				pen.moveTo(0,currentIndex);
+				pen.lineTo(game.width,currentIndex);
+				pen.stroke();
+			}
+			game.style.backgroundColor = "rgb(212,163,123)"; // set the background color
+
+			let currentX = 0;
+			for (let r=0;r<gameSize+1;r++) {
+				intersectPoint.push([]);
+				let currentY = 0;
+				for (let c=0;c<gameSize+1;c++) {
+					intersectPoint[r].push({});
+					intersectPoint[r][c].x = currentX;
+					intersectPoint[r][c].y = currentY;
+					intersectPoint[r][c].chess = 0;
+					currentY += game.height/gameSize;
+				}
+				currentX += game.width/gameSize;
+			}
+		}
+
+		function detectClick() {
+			let windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+			let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+			window.addEventListener("resize",function() {
+				windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+				windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+			})
+
+			game.addEventListener("click", function(e) {
+				// get mouse click position
+				const mouseX = e.pageX;
+				const mouseY = e.pageY;
+
+				let clickPosition = {x:mouseX-((windowWidth-game.width)/2),y:mouseY-((windowHeight-game.height)/2)};
+
+				rowLoop:for (let r=0;r<gameSize+1;r++) {
+					for (let c=0;c<gameSize+1;c++) {
+						if (clickPosition.x - intersectPoint[r][c].x < game.width/gameSize/2 && clickPosition.y - intersectPoint[r][c].y < game.height/gameSize/2) {
+							if (intersectPoint[r][c].chess == 0) {
+								pen.beginPath();
+								pen.arc(intersectPoint[r][c].x,intersectPoint[r][c].y, 30, 0, 2 * Math.PI);
+								// pen.stroke();
+								if (black) {
+									pen.fillStyle = "black";
+									intersectPoint[r][c].chess = 1;
+									checkWin(r,c);
+									black = false;
+								} else {
+									pen.fillStyle = "white";
+									intersectPoint[r][c].chess = 2;
+									checkWin(r,c);
+									black = true;
+								}
+								pen.fill()
+								console.log(intersectPoint);
+								break rowLoop;
+							} else {
+								return;
+							}
+						}
+					}
+				}
+			})
+		}
+
+		function checkWin(r,c) {
+			// let win = true;
+			if (black) {
+				if (r+4 <= gameSize) {
+					if (intersectPoint[r+1][c].chess == 1 && intersectPoint[r+2][c].chess == 1 && intersectPoint[r+3][c].chess == 1 && intersectPoint[r+4][c].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (r+3 <= gameSize && r-1 >= 0) {
+					if (intersectPoint[r-1][c].chess == 1 && intersectPoint[r+1][c].chess == 1 && intersectPoint[r+2][c].chess == 1 && intersectPoint[r+3][c].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (r+2 <= gameSize && r-2 >= 0) {
+					if (intersectPoint[r-2][c].chess == 1 && intersectPoint[r-1][c].chess == 1 && intersectPoint[r+1][c].chess == 1 && intersectPoint[r+2][c].chess == 1) {
+						alert("Black won!");
+						return;
+					}
+				} if (r+1 <= gameSize && r-3 >= 0) {
+					if (intersectPoint[r-3][c].chess == 1 && intersectPoint[r-2][c].chess == 1 && intersectPoint[r+1][c].chess == 1 && intersectPoint[r+1][c].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (r-4 >= 0) {
+					if (intersectPoint[r-4][c].chess == 1 && intersectPoint[r-3][c].chess == 1 && intersectPoint[r-2][c].chess == 1 && intersectPoint[r-1][c].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (c+4 <= gameSize) {
+					if (intersectPoint[r][c+1].chess == 1 && intersectPoint[r][c+2].chess == 1 && intersectPoint[r][c+3].chess == 1 && intersectPoint[r][c+4].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (c+3 <= gameSize && c-1 >= 0) {
+					if (intersectPoint[r][c-1].chess == 1 && intersectPoint[r][c+1].chess == 1 && intersectPoint[r][c+2].chess == 1 && intersectPoint[r][c+3].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (c+2 <= gameSize && c-2 >= 0) {
+					if (intersectPoint[r][c-2].chess == 1 && intersectPoint[r][c-1].chess == 1 && intersectPoint[r][c+1].chess == 1 && intersectPoint[r][c+2].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (c+1 <= gameSize && c-3 >= 0) {
+					if (intersectPoint[r][c-3].chess == 1 && intersectPoint[r][c-2].chess == 1 && intersectPoint[r][c-1].chess == 1 && intersectPoint[r][c+1].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (c-4 >= 0) {
+					if (intersectPoint[r][c-4].chess == 1 && intersectPoint[r][c-3].chess == 1 && intersectPoint[r][c-2].chess == 1 && intersectPoint[r][c-1].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} if (r+4 <= gameSize && c+4 <= gameSize) {
+					if (intersectPoint[r+1][c+1].chess == 1 && intersectPoint[r+2][c+2].chess == 1 && intersectPoint[r+3][c+3].chess == 1 && intersectPoint[r+4][c+4].chess == 1) {
+						alert("Black won!");
+						return;
+					} 
+				} 
+			}
+		}
+		
+		init();
 	</script>
 </body>
 </html>
