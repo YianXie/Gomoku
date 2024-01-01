@@ -1,11 +1,25 @@
-body {
-	text-align: center;
-}
-
 canvas {
 	border: 3px solid;
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%,-50%);
+	transition: width 1s, height 1s;
+}
+
+.register {
+	font-size: 25px;
+	font-family: monospace;
+	font-weight: bold;
+	float: right;
+	margin-right: 30px;
+}
+
+.register:visited {color: blue;}
+
+@media only screen and (max-width: 700px) {
+	canvas {
+		width: 400px;
+		height: 400px;
+	}
 }
