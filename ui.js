@@ -1,5 +1,6 @@
 console.log("version 2001");
 
+// gIntersectPoint[0][0] = {x:0,y:0,chess:0};
 let gIntersectPoint = [];
 let gNextPlayerColor = "B"; // 该下的人的颜色
 
@@ -23,20 +24,20 @@ function init() {
 	// Preview`
 	gGame.addEventListener("mousemove",oneMouseMove);
 	gGame.addEventListener("mousedown",oneMouseDown);
-	document.getElementById("gameIdText").addEventListener("mouseover", function() {
-		document.getElementById("gameIdText").style.textDecoration = "underline";
-		document.getElementById("linkIcon").style.textDecoration = "underline";
-	});
-	document.getElementById("gameIdText").addEventListener("mouseout", function() {
-		document.getElementById("gameIdText").style.textDecoration = "none";
-		document.getElementById("linkIcon").style.textDecoration = "none";
-	});
+	// document.getElementById("gameIdText").addEventListener("mouseover", function() {
+	// 	document.getElementById("gameIdText").style.textDecoration = "underline";
+	// 	// document.getElementById("linkIcon").style.textDecoration = "underline";
+	// });
+	// document.getElementById("gameIdText").addEventListener("mouseout", function() {
+	// 	document.getElementById("gameIdText").style.textDecoration = "none";
+	// 	// document.getElementById("linkIcon").style.textDecoration = "none";
+	// });
 	document.addEventListener("mousedown", function(e) {
 		if (!document.getElementById("userOptions").contains(e.target)) {
 			document.getElementById("userOptions").classList.remove("userOptionsShow");
 		}
 	});
-	waitingForOpponent();
+	// waitingForOpponent();
 }
 
 function waitingForOpponent() {
@@ -70,10 +71,14 @@ function logout() {
 
 function aboutShow() {
 	document.getElementById("about").classList.add("about-show");
+	const grayBackground = document.createElement("div");
+	document.body.appendChild(grayBackground);
+	grayBackground.classList.add("grayBackground");
 }
 
 function aboutClose() {
 	document.getElementById("about").classList.remove("about-show");
+	grayBackground = document.getElementsByClassName("grayBackground")[0].remove();
 }
 
 function updateSize() {
@@ -150,18 +155,19 @@ function drawCoords() {
 function oneMouseMove(e) {
 	mouseX = e.pageX;
 	mouseY = e.pageY;
+	// the x and y are relative to the whole page
 	chessHover(e.pageX,e.pageY);
 }
 
 function oneMouseDown(e) {
 	if (e.button == 0) {
 		// moveChess = false;
-		// 相对于整个屏幕的坐标
+		// 相对于整个网页的坐标
 		const mouseX = e.pageX;
 		const mouseY = e.pageY;
 
 		// 相对于棋盘的坐标
-		let clickPosition = {x:mouseX-((windowWidth-gCanvasWidth)/2)-gapSize,y:mouseY-((windowHeight-gCanvasHeight)/2)-gapSize};
+		let clickPosition = {x:mouseX-((windowWidth-gCanvasWidth)/2)-gapSize,y:mouseY-gGame.offsetTop-gapSize};
 
 		rowLoop:for (let r=0;r<blocksNumber+1;r++) {
 			for (let c=0;c<blocksNumber+1;c++) {
@@ -185,11 +191,11 @@ function oneMouseDown(e) {
 	}
 }
 
-function chessHover(x,y,forceDraw = false) {
-	let position = {x:x-((windowWidth-gCanvasWidth)/2)-gapSize,y:y-((windowHeight-gCanvasHeight)/2)-gapSize};
+function chessHover(pageX,pageY,forceDraw = false) {
+	let gameBoardCoords = {x:pageX-((windowWidth-gCanvasWidth)/2)-gapSize,y:pageY-gGame.offsetTop-gapSize};
 	for (let r=0;r<blocksNumber+1;r++) {
 		for (let c=0;c<blocksNumber+1;c++) {
-			if (Math.abs(position.x - gIntersectPoint[r][c].x) < (gCanvasWidth-gapSize*2)/blocksNumber/2 && Math.abs(position.y - gIntersectPoint[r][c].y) < (gCanvasHeight-gapSize*2)/blocksNumber/2) {
+			if (Math.abs(gameBoardCoords.x - gIntersectPoint[r][c].x) < (gCanvasWidth-gapSize*2)/blocksNumber/2 && Math.abs(gameBoardCoords.y - gIntersectPoint[r][c].y) < (gCanvasHeight-gapSize*2)/blocksNumber/2) {
 				if (gIntersectPoint[r][c].chess == 0) {
 					if ((gPreviewPoint.x != gIntersectPoint[r][c].x || gPreviewPoint.y != gIntersectPoint[r][c].y) || forceDraw) {
 						gPreviewPoint.x = gIntersectPoint[r][c].x;
@@ -404,10 +410,11 @@ function updatePlayers() {
 		} else {
 			document.getElementById("players").innerHTML = "<i class='bx bxs-circle'></i>" + username + " vs. " + "<i class='bx bx-circle' ></i>"  + opponentName ;
 		}
-		document.getElementById("tips").remove();
+		// document.getElementById("tips").remove();
 	}
 	const linkIcon = "<i class='bx bx-link' id='linkIcon' onclick='copyUrl()' style='color: blue;'></i>";
-	document.getElementById("gameIdText").innerHTML = "ID: " + gameId + linkIcon;
+	document.getElementById("gameIdText").innerHTML = "Game Room: " + gameId + linkIcon;
+	// document.getElementById("changeRoomNumber").innerHTML = "Change";
 }
 
 function include(filename,callback) {
