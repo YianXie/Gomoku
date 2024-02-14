@@ -108,17 +108,17 @@ if ($file) {
 		The game is a draw if the board is filled before either player wins.
 	</div>
 	<div class="multiplayer-options">
-		<span id="gameIdText" class="game-id" onclick="copyUrl()"></span>
-		<div class="tips" id="tips">
+		<span id="gameIdText" class="game-id" onclick="copyUrl()"></span> <!-- <span id="changeRoomNumber" class="change-room-number"></span> -->
+		<p id="players" class="players"></p>
+		<!-- <div class="tips" id="tips">
 			<p class="user-tips">Share the <a href="javascript:copyUrl()">url</a> to your friend to play together</p>
 			<p class="waiting-for-opponent" id="waiting">Waiting for opponent...</p>
-		</div>
+		</div> -->
 	</div>
 	<div class="toast" id="toast">
 		<span class="toast-text"><i class='bx bxs-check-circle'></i>copied!</span>
 	</div>
 	<canvas id="gameBoard" width="700" height="700" oncontextmenu="return false"></canvas>
-	<p id="players"></p>
 	<audio id="oneMoveAudio">
 		<source src="one_move.mp3" type="audio/mpeg">
 	</audio>
